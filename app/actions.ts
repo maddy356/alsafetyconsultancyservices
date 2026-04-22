@@ -1,7 +1,6 @@
 "use server";
 import { Resend } from 'resend';
 
-// Initialize Resend with your API Key
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendInquiry(formData: FormData) {
@@ -10,16 +9,10 @@ export async function sendInquiry(formData: FormData) {
   const message = formData.get("message") as string;
 
   try {
-    const { data, error } = await resend.emails.send({
-      // 1. MUST be your domain. 'info@' or 'web@' works best.
+    const { error } = await resend.emails.send({
       from: 'Alsafety Web <info@alsafety.info>', 
-      
-      // 2. The client's receiving inbox
       to: ['sales@alsafety.info'], 
-      
-      // 3. This allows the client to hit "Reply" and talk to the customer directly
-      reply_to: email, 
-      
+      replyTo: email, 
       subject: `New Business Inquiry: ${name}`,
       html: `
         <div style="font-family: sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
@@ -36,14 +29,9 @@ export async function sendInquiry(formData: FormData) {
       `,
     });
 
-    if (error) {
-      console.error("Resend Error:", error);
-      return { success: false, error: error.message };
-    }
-
+    if (error) return { success: false, error: error.message };
     return { success: true };
   } catch (e) {
-    console.error("System Error:", e);
     return { success: false };
   }
 }
