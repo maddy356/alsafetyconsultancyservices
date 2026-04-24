@@ -13,27 +13,39 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  // 1. Primary SEO
-  title: "Alsafety Consultancy | HSE & ISO Services Bahrain",
-  description: "Leading HSE consultancy in Bahrain. Expert ISO 45001 certification, safety training, risk assessments, and environmental management systems.",
-  keywords: ["HSE Bahrain", "ISO 45001 Bahrain", "Safety Training Bahrain", "Safety Consultant Manama", "ISO Certification Bahrain", "Alsafety"],
+  // 1. Primary SEO (Now includes Arabic)
+  title: "Alsafety Consultancy | HSE & ISO Services Bahrain | استشارات السلامة",
+  description: "Leading HSE consultancy in Bahrain. Expert ISO 45001, safety training, and risk assessments. استشارات السلامة والصحة المهنية وأيزو في البحرين",
+  keywords: [
+    "HSE Bahrain", "ISO 45001 Bahrain", "Safety Training Bahrain", 
+    "Alsafety", "استشارات سلامة", "أيزو البحرين", "الصحة المهنية", "تدريب سلامة"
+  ],
   
-  // 2. Google Search Console Verification
+  // 2. Google Search Console Verification (Kept your ID)
   verification: {
     google: "ig7cDAANahpKidebUFoaiyMJRC-YZdlwElX5PgKIVxA",
   },
 
-  // 3. Social Media/WhatsApp Preview (OpenGraph)
+  // 3. Social Media/WhatsApp Preview (Arabic added to description)
   openGraph: {
     title: 'Alsafety Consultancy | Professional Safety Services',
-    description: 'Expert HSE & ISO consultancy services for businesses in Bahrain.',
+    description: 'Expert HSE & ISO consultancy services in Bahrain. استشارات السلامة المهنية',
     url: 'https://alsafety.info',
     siteName: 'Alsafety Bahrain',
     locale: 'en_US',
     type: 'website',
   },
 
-  // 4. Search Engine Instructions
+  // 4. Language Alternates (Crucial for Arabic SEO)
+  alternates: {
+    canonical: 'https://alsafety.info',
+    languages: {
+      'en-US': 'https://alsafety.info',
+      'ar-BH': 'https://alsafety.info',
+    },
+  },
+
+  // 5. Search Engine Instructions
   robots: {
     index: true,
     follow: true,
@@ -46,6 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // We keep lang="en" for the main UI, but Google now knows Arabic content is here
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
