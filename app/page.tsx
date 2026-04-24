@@ -1,266 +1,282 @@
-"use client";
-import React, { useState } from 'react';
-import { Send, Mail, MapPin, ChevronDown, ChevronUp, CheckCircle2, Users, Target, Rocket } from 'lucide-react';
-import { sendInquiry } from './actions';
+'use client';
+import { useState } from 'react';
+import { sendInquiry } from './actions'; // Ensure this matches your file path
 
 export default function LandingPage() {
   const [lang, setLang] = useState<'en' | 'ar'>('en');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const content = {
-    en: {
-      heroTitle: "AL Safety",
-      heroSubtitle: "Your Trusted Partner for Safer, Greener, and More Resilient Workplaces",
-      heroDesc: "A dedicated health, safety, environment, and sustainable development consultancy built on the belief that every organization deserves a workplace where people are protected and operations are sustainable.",
-      ctaBtn: "Get Started",
-      aboutTitle: "Who We Are",
-      aboutDesc: "We are a team of highly qualified, licensed, and experienced HSE and sustainability consultants. We bring together deep technical knowledge with real-world practicality gained across multiple sectors. Our experts don’t just observe from the outside; we become an extension of your team.",
-      visionTitle: "Our Vision",
-      vision: "To be the most trusted and recognized trademark in HSE and sustainable development consultancy – helping shape a world where every workplace is inherently safe, green, and resilient.",
-      missionTitle: "Our Mission",
-      mission: "To empower organizations with expert HSE solutions and integrated management systems that protect people, preserve the environment, and secure business continuity.",
-      servicesTitle: "Our Specialized Services",
-      clickPrompt: "Click a service to view complete details",
-      contactTitle: "Contact Our Consultants",
-      location: "Manama, Kingdom of Bahrain",
-      services: [
-        { 
-          title: "Certification & Systems", 
-          short: "ISO 45001, 9001, 14001 and IMS design.",
-          details: ["ISO 45001 (Occupational Health & Safety) development", "ISO 9001 (Quality Management) implementation", "ISO 14001 (Environmental Management) systems", "Design and build of Integrated Management Systems (IMS)"]
-        },
-        { 
-          title: "Safety & Compliance Audits", 
-          short: "Comprehensive audits and regulatory readiness.",
-          details: ["Comprehensive safety and compliance audits", "Regulatory inspection preparedness reviews", "HSE documentation and record-keeping reviews"]
-        },
-        { 
-          title: "Risk Management", 
-          short: "Workplace risk, JSA, and site inspections.",
-          details: ["Workplace risk and Job Safety Analysis (JSA)", "Site safety inspections and walkthroughs", "Fire, ergonomics, and specialized risk assessments"]
-        },
-        { 
-          title: "Digital HSE Solutions", 
-          short: "Moving from paper to efficient digital platforms.",
-          details: ["Digitization of your Safety Management System (SMS)", "Custom digital dashboards for real-time monitoring", "Digital tools for audits, inspections, and training"]
-        },
-        { 
-          title: "Specialized HSE Support", 
-          short: "Fully outsourced or on-demand expert advisors.",
-          details: ["Fully outsourced HSE department: managing your HSE end-to-end", "On-demand HSE Officer/Advisor services", "Environmental compliance audits and waste management"]
-        },
-        { 
-          title: "Incident Intelligence", 
-          short: "Investigations beyond root cause analysis.",
-          details: ["Investigations of organizational and systemic factors", "Analysis of incident trends and patterns across projects", "Data-driven insights to proactively manage emerging risks"]
-        }
-      ],
-      form: { name: "Name", email: "Email", phone: "Phone", msg: "How can we help?", btn: "Send Inquiry" }
-    },
-    ar: {
-      heroTitle: "السفتي للاستشارات",
-      heroSubtitle: "شريككم الموثوق لأماكن عمل أكثر أماناً واستدامة ومرونة",
-      heroDesc: "شركة استشارية متخصصة في الصحة والسلامة والبيئة والتنمية المستدامة، قائمة على إيمان راسخ بأن كل مؤسسة تستحق مكان عمل يكون فيه الأفراد محميين.",
-      ctaBtn: "ابدأ الآن",
-      aboutTitle: "من نحن",
-      aboutDesc: "نحن فريق من استشاريي الصحة والسلامة والبيئة والاستدامة المؤهلين تأهيلاً عالياً والمرخصين. نجمع بين المعرفة التقنية العميقة والتطبيق العملي الواقعي المكتسب عبر قطاعات متعددة. خبراؤنا لا يكتفون بالمراقبة؛ بل يصبحون امتداداً حقيقياً لفريقكم.",
-      visionTitle: "رؤيتنا",
-      vision: "أن نكون العلامة التجارية الأكثر ثقة واعترافاً في مجال استشارات السلامة والصحة والبيئة والتنمية المستدامة والإسهام في تشكيل عالم آمن ومستدام.",
-      missionTitle: "مهمتنا",
-      mission: "تمكين المؤسسات بحلول خبيرة في الصحة والسلامة والبيئة وأنظمة إدارة متكاملة تحمي الأفراد وتحافظ على البيئة وتضمن استمرارية الأعمال.",
-      servicesTitle: "قائمة خدماتنا",
-      clickPrompt: "اضغط على الخدمة لعرض التفاصيل الكاملة",
-      contactTitle: "تواصل مع مستشارينا",
-      location: "المنامة، مملكة البحرين",
-      services: [
-        { 
-          title: "الشهادات الدولية", 
-          short: "ISO 45001 و 9001 و 14001 وتصميم IMS.",
-          details: ["تطوير وتنفيذ أنظمة ISO 45001", "تطوير وتنفيذ أنظمة ISO 9001", "تطوير وتنفيذ أنظمة ISO 14001", "تصميم وبناء أنظمة إدارة متكاملة (IMS)"]
-        },
-        { 
-          title: "تدقيق السلامة والامتثال", 
-          short: "تدقيق شامل وجاهزية للتفتيش الرقابي.",
-          details: ["تدقيق شامل للسلامة والامتثال", "مراجعات الاستعداد للتفتيش الرقابي", "مراجعة أنظمة توثيق وحفظ سجلات الصحة والسلامة"]
-        },
-        { 
-          title: "إدارة وتقييم المخاطر", 
-          short: "تحليل مخاطر العمل وتفتيش المواقع.",
-          details: ["تحليل مخاطر مكان العمل وتحليل سلامة المهام (JSA)", "تفتيش مواقع العمل والجولات التفقدية", "تقييم المخاطر المتخصصة: الحرائق و COSHH"]
-        },
-        { 
-          title: "الحلول الرقمية", 
-          short: "التحول من العمليات الورقية إلى المنصات الرقمية.",
-          details: ["رقمنة نظام إدارة السلامة (SMS)", "تخصيص لوحات مؤشرات رقمية للمراقبة اللحظية", "دمج الأدوات الرقمية للتدقيق وسجلات التدريب"]
-        },
-        { 
-          title: "الدعم المتخصص", 
-          short: "إدارة خارجية كاملة أو مستشارين عند الطلب.",
-          details: ["إدارة خارجية كاملة: ندير وظيفة السلامة لديكم من الألف إلى الياء", "خدمات مستشار صحة وسلامة وبيئة عند الطلب", "تدقيق الامتثال البيئي وخطط إدارة النفايات"]
-        },
-        { 
-          title: "التحقيق في الحوادث", 
-          short: "تحقيقات شاملة تتجاوز الأسباب الجذرية.",
-          details: ["تحقيقات تتجاوز الأسباب الجذرية للعوامل التنظيمية", "تحليل اتجاهات وأنماط الحوادث عبر المشاريع", "توصيات عملية قائمة على البيانات لمنع التكرار"]
-        }
-      ],
-      form: { name: "الاسم", email: "البريد", phone: "الهاتف", msg: "كيف نساعدك؟", btn: "إرسال الطلب" }
-    }
+  const toggleService = (index: number) => {
+    setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  const cur = content[lang];
+  const scrollToContact = () => {
+    document.getElementById('inquiry-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   async function handleSubmit(formData: FormData) {
     setIsSubmitting(true);
-    const result = await sendInquiry(formData);
-    setIsSubmitting(false);
-    if (result.success) {
-      setIsSuccess(true);
-      setTimeout(() => setIsSuccess(false), 5000);
+    setStatus('idle');
+    try {
+      const result = await sendInquiry(formData);
+      if (result.success) {
+        setStatus('success');
+      } else {
+        setStatus('error');
+      }
+    } catch (e) {
+      setStatus('error');
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
+  const content = {
+    en: {
+      navServices: "Services",
+      navAbout: "About",
+      navContact: "Contact Us",
+      heroTitle: "Your Trusted Partner for Safer, Greener, and More Resilient Workplaces",
+      heroDesc: "Expert health, safety, environment, and sustainable development consultancy. We protect your people, preserve the environment, and secure business continuity.",
+      ctaButton: "Get an Inquiry",
+      whoWeAreTitle: "Who We Are",
+      whoWeAreDesc: "We are a team of highly qualified, licensed, and experienced HSE and sustainability consultants. We bring together deep technical knowledge in safety, health, environment, and sustainable business practices.",
+      visionTitle: "Our Vision",
+      vision: "To be the most trusted and recognized trademark in safety, health, environment and sustainable development consultancy.",
+      missionTitle: "Our Mission",
+      mission: "To empower organizations with expert HSE solutions and integrated management systems.",
+      servicesTitle: "Our Specialized Services",
+      inquiryTitle: "Professional Inquiry",
+      inquirySub: "Submit your details and our consultants will reach out to you.",
+      nameLabel: "Full Name",
+      emailLabel: "Business Email",
+      phoneLabel: "Contact Number",
+      messageLabel: "Project Details / Inquiry",
+      sendButton: "Submit Inquiry",
+      sending: "Processing...",
+      successTitle: "Thank You!",
+      successBody: "Your inquiry has been received. One of our HSE consultants will review your details and contact you shortly.",
+      errorMsg: "Something went wrong. Please try again or email us directly.",
+      backBtn: "Send another message",
+      services: [
+        { title: "1. International Certification & Management Systems", items: ["ISO 45001 (Occupational Health & Safety)", "ISO 9001 (Quality Management)", "ISO 14001 (Environmental Management)", "Integrated Management Systems (IMS)"] },
+        { title: "2. Safety & Compliance Audits", items: ["Comprehensive safety and compliance audits", "Regulatory inspection preparedness", "HSE documentation reviews"] },
+        { title: "3. Training Supports", items: ["HSE training needs analysis", "Lifesaving training", "Tailored on-the-job trainings"] },
+        { title: "4. Risk Management & Assessments", items: ["Workplace risk and Job Safety Analysis (JSA)", "Site safety inspections", "Specialized assessments (Fire, COSHH, etc.)"] },
+        { title: "5. Procedure & System Development", items: ["HSE policies and manuals", "Emergency response plans", "Project specific HSE plans"] },
+        { title: "6. Specialized HSE Support", items: ["Fully outsourced HSE department", "On-demand HSE Officer services"] },
+        { title: "7. Environmental Management", items: ["Environmental compliance audits", "Waste & pollution control plans", "Sustainable practice integration"] },
+        { title: "8. Safety Culture & Leadership", items: ["Safety leadership programs", "Management training", "Culture alignment"] },
+        { title: "9. Contractor Safety Management", items: ["Contractor HSE pre-qualification", "Performance monitoring"] },
+        { title: "10. Occupational Health", items: ["Health risk assessments", "Medical check programs", "First aid procedures"] },
+        { title: "11. Digital HSE Solutions", items: ["Digitization of SMS", "Custom real-time dashboards", "Digital audit & training tools"] },
+        { title: "12. OHS Incident Analysis & Trend Intelligence", items: ["Comprehensive investigations", "Incident trend analysis", "Data-driven risk prevention"] }
+      ]
+    },
+    ar: {
+      navServices: "خدماتنا",
+      navAbout: "من نحن",
+      navContact: "اتصل بنا",
+      heroTitle: "شريككم الموثوق لأماكن عمل أكثر أماناً واستدامة ومرونة",
+      heroDesc: "استشارات متخصصة في الصحة والسلامة والبيئة والتنمية المستدامة. نحمي أفرادكم، نحافظ على البيئة، ونضمن استمرارية أعمالكم.",
+      ctaButton: "إرسال استفسار",
+      whoWeAreTitle: "من نحن",
+      whoWeAreDesc: "نحن فريق من استشاريي الصحة والسلامة والبيئة والاستدامة المؤهلين تأهيلاً عالياً. نجمع بين المعرفة التقنية العميقة في السلامة والصحة والبيئة وممارسات الأعمال المستدامة.",
+      visionTitle: "رؤيتنا",
+      vision: "أن نكون العلامة التجارية الأكثر ثقة واعترافاً في مجال استشارات السلامة والصحة والبيئة والتنمية المستدامة.",
+      missionTitle: "مهمتنا",
+      mission: "تمكين المؤسسات بحلول خبيرة في الصحة والسلامة والبيئة وأنظمة إدارة متكاملة.",
+      servicesTitle: "خدماتنا المتخصصة",
+      inquiryTitle: "طلب استشارة مهنية",
+      inquirySub: "أدخل بياناتك وسيقوم مستشارونا بالتواصل معك.",
+      nameLabel: "الاسم الكامل",
+      emailLabel: "البريد الإلكتروني للعمل",
+      phoneLabel: "رقم التواصل",
+      messageLabel: "تفاصيل المشروع / الاستفسار",
+      sendButton: "إرسال الطلب",
+      sending: "جاري المعالجة...",
+      successTitle: "شكراً لتواصلكم!",
+      successBody: "لقد تم استلام طلبكم بنجاح. سيقوم أحد مستشارينا بمراجعة التفاصيل والتواصل معكم في أقرب وقت ممكن.",
+      errorMsg: "حدث خطأ ما. يرجى المحاولة مرة أخرى أو مراسلتنا مباشرة.",
+      backBtn: "إرسال رسالة أخرى",
+      services: [
+        { title: "1. الشهادات الدولية وأنظمة الإدارة", items: ["ISO 45001 (الصحة والسلامة المهنية)", "ISO 9001 (إدارة الجودة)", "ISO 14001 (الإدارة البيئية)", "أنظمة إدارة متكاملة (IMS)"] },
+        { title: "2. تدقيق السلامة والامتثال", items: ["تدقيق شامل للسلامة والامتثال", "مراجعات الاستعداد للتفتيش الرقابي", "مراجعة وثائق الصحة والسلامة"] },
+        { title: "3. دعم التدريب", items: ["تحليل الاحتياجات التدريبية", "تدريبات إنقاذ الحياة", "تدريبات مهنية متخصصة"] },
+        { title: "4. إدارة وتقييم المخاطر", items: ["تحليل مخاطر مكان العمل (JSA)", "تفتيش مواقع العمل", "تقييمات المخاطر المتخصصة"] },
+        { title: "5. تطوير الإجراءات والأنظمة", items: ["سياسات وإجراءات الصحة والسلامة", "خطط الاستجابة للطوارئ", "خطط الصحة والسلامة للمشاريع"] },
+        { title: "6. الدعم المتخصص في الصحة والسلامة والبيئة", items: ["إدارة خارجية كاملة للصحة والسلامة", "خدمات مستشار عند الطلب"] },
+        { title: "7. الإدارة البيئية", items: ["تدقيق الامتثال البيئي", "خطط مكافحة التلوث", "دمج الممارسات المستدامة"] },
+        { title: "8. ثقافة السلامة والقيادة", items: ["برامج القيادة في السلامة", "تدريب الإدارة", "تحسين ثقافة السلامة"] },
+        { title: "9. إدارة سلامة المقاولين", items: ["تأهيل المقاولين مسبقاً", "مراقبة الأداء المستمرة"] },
+        { title: "10. الصحة المهنية", items: ["تقييمات مخاطر الصحة المهنية", "برامج الفحوصات الطبية", "إجراءات الإسعافات الأولية"] },
+        { title: "11. الحلول الرقمية للصحة والسلامة والبيئة", items: ["رقمنة نظام إدارة السلامة (SMS)", "لوحات مؤشرات رقمية آنية", "أدوات رقمية للتدقيق والتدريب"] },
+        { title: "12. التحقيق في حوادث الصحة و السلامة المهنية", items: ["تحقيقات شاملة في الحوادث", "تحليل أنماط واتجاهات الحوادث", "رؤى لمنع التكرار"] }
+      ]
+    }
+  };
+
+  const current = content[lang];
+
   return (
-    <main className={`min-h-screen bg-white text-slate-900 ${lang === 'ar' ? 'text-right' : 'text-left'}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="text-2xl font-black tracking-tighter text-blue-900 uppercase">AL SAFETY</div>
-          <div className="relative w-32 h-10 bg-slate-100 rounded-full p-1 flex items-center cursor-pointer border border-slate-200" onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}>
-            <div className={`absolute w-[60px] h-8 bg-blue-900 rounded-full transition-all duration-300 shadow-lg ${lang === 'ar' ? 'translate-x-0' : 'translate-x-[64px]'}`} />
-            <span className={`z-10 flex-1 text-center text-xs font-bold transition-colors ${lang === 'ar' ? 'text-white' : 'text-slate-500'}`}>AR</span>
-            <span className={`z-10 flex-1 text-center text-xs font-bold transition-colors ${lang === 'en' ? 'text-white' : 'text-slate-500'}`}>EN</span>
-          </div>
+    <main className={`min-h-screen bg-white font-sans ${lang === 'ar' ? 'text-right' : 'text-left'}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+      
+      {/* Navigation */}
+      <nav className="p-4 border-b flex justify-between items-center bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm px-6 md:px-12 text-blue-900">
+        <div className="font-black text-2xl tracking-tighter">AL SAFETY</div>
+        <div className="hidden md:flex gap-8 items-center font-medium">
+          <a href="#services" className="hover:text-blue-600 transition">{current.navServices}</a>
+          <a href="#about" className="hover:text-blue-600 transition">{current.navAbout}</a>
+          <button onClick={scrollToContact} className="bg-blue-900 text-white px-5 py-2 rounded-full text-sm hover:bg-blue-800 transition">
+            {current.navContact}
+          </button>
+        </div>
+        <div className="flex gap-2 border-l pl-4 ml-4">
+          <button onClick={() => setLang('en')} className={`w-8 h-8 flex items-center justify-center text-xs font-bold rounded-full transition ${lang === 'en' ? 'bg-blue-900 text-white' : 'hover:bg-slate-100 text-slate-400'}`}>EN</button>
+          <button onClick={() => setLang('ar')} className={`w-8 h-8 flex items-center justify-center text-xs font-bold rounded-full transition ${lang === 'ar' ? 'bg-blue-900 text-white' : 'hover:bg-slate-100 text-slate-400'}`}>AR</button>
         </div>
       </nav>
 
       {/* Hero */}
-      <header className="py-24 px-6 max-w-7xl mx-auto">
-        <h1 className="text-5xl md:text-7xl font-extrabold mb-8 leading-[1.1] tracking-tight">
-          {cur.heroTitle} <span className="text-blue-700 block text-2xl md:text-5xl mt-2 font-medium">{cur.heroSubtitle}</span>
-        </h1>
-        <p className="text-xl text-slate-600 max-w-2xl mb-10 leading-relaxed">{cur.heroDesc}</p>
-        <div className="flex gap-4">
-          <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="bg-blue-900 text-white px-10 py-4 rounded-full font-bold hover:bg-blue-800 transition-all shadow-xl">
-            {cur.ctaBtn}
-          </button>
-          <button onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })} className="bg-white border border-slate-200 text-slate-900 px-10 py-4 rounded-full font-bold hover:bg-slate-50 transition-all">
-            {cur.aboutTitle}
+      <header className="relative py-24 md:py-32 px-6">
+        <div className="max-w-6xl mx-auto z-10 relative">
+          <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 mb-8 leading-[1.1] tracking-tight">
+            {current.heroTitle}
+          </h1>
+          <p className="text-xl md:text-2xl text-slate-600 leading-relaxed max-w-3xl mb-10">
+            {current.heroDesc}
+          </p>
+          <button onClick={scrollToContact} className="bg-blue-900 text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-blue-800 transition shadow-xl shadow-blue-900/20">
+            {current.ctaButton}
           </button>
         </div>
       </header>
 
-      {/* About Us Section */}
-      <section id="about" className="py-24 px-6 bg-slate-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
+      {/* About Section */}
+      <section id="about" className="py-24 px-6 bg-slate-900 text-white border-y border-white/10">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-4xl font-black mb-8 italic flex items-center gap-3">
-                <Users className="text-blue-600" /> {cur.aboutTitle}
-              </h2>
-              <p className="text-lg text-slate-600 leading-relaxed">
-                {cur.aboutDesc}
-              </p>
+              <h2 className="text-sm uppercase tracking-[0.3em] text-blue-400 font-bold mb-4">{current.whoWeAreTitle}</h2>
+              <p className="text-2xl md:text-3xl font-light leading-relaxed text-slate-200">{current.whoWeAreDesc}</p>
             </div>
             <div className="grid gap-6">
-              <div className="p-8 bg-white rounded-3xl shadow-sm border border-slate-100">
-                <h3 className="text-blue-600 font-bold mb-4 flex items-center gap-2 uppercase tracking-widest text-xs">
-                  <Target size={18} /> {cur.visionTitle}
-                </h3>
-                <p className="text-slate-600 text-sm leading-relaxed">{cur.vision}</p>
+              <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
+                <h3 className="text-xl font-bold mb-3 text-blue-400">{current.visionTitle}</h3>
+                <p className="text-slate-400">{current.vision}</p>
               </div>
-              <div className="p-8 bg-white rounded-3xl shadow-sm border border-slate-100">
-                <h3 className="text-blue-600 font-bold mb-4 flex items-center gap-2 uppercase tracking-widest text-xs">
-                  <Rocket size={18} /> {cur.missionTitle}
-                </h3>
-                <p className="text-slate-600 text-sm leading-relaxed">{cur.mission}</p>
+              <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
+                <h3 className="text-xl font-bold mb-3 text-blue-400">{current.missionTitle}</h3>
+                <p className="text-slate-400">{current.mission}</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Expandable Services */}
-      <section className="py-24 px-6 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-black mb-4 text-center uppercase tracking-tighter">{cur.servicesTitle}</h2>
-        <p className="text-center text-slate-400 text-sm mb-16">{cur.clickPrompt}</p>
-        <div className="grid md:grid-cols-2 gap-4">
-          {cur.services.map((s, i) => (
+      {/* Services Section */}
+      <section id="services" className="py-24 px-6 max-w-6xl mx-auto">
+        <h2 className="text-4xl font-black mb-16 text-center text-slate-900">{current.servicesTitle}</h2>
+        <div className="grid gap-3 max-w-4xl mx-auto">
+          {current.services.map((service, idx) => (
             <div 
-              key={i} 
-              onClick={() => setExpandedIndex(expandedIndex === i ? null : i)}
-              className={`p-8 rounded-3xl border transition-all cursor-pointer group ${expandedIndex === i ? 'bg-blue-900 text-white border-blue-900 shadow-2xl scale-[1.02]' : 'bg-white border-slate-100 hover:border-blue-300 shadow-sm'}`}
+              key={idx} 
+              className={`group border-2 rounded-2xl transition-all cursor-pointer ${expandedIndex === idx ? 'border-blue-600 bg-blue-50/30' : 'border-slate-100 bg-white hover:border-slate-300 shadow-sm'}`}
+              onClick={() => toggleService(idx)}
             >
-              <div className="flex justify-between items-center">
-                <h3 className={`font-bold text-lg ${expandedIndex === i ? 'text-blue-400' : 'text-blue-900'}`}>{s.title}</h3>
-                {expandedIndex === i ? <ChevronUp size={20} /> : <ChevronDown size={20} className="text-slate-300 group-hover:text-blue-500" />}
+              <div className="p-6 flex justify-between items-center text-lg md:text-xl font-bold text-slate-800">
+                {service.title}
+                <span className={`transition-transform ${expandedIndex === idx ? 'rotate-180 text-blue-600' : 'text-slate-400'}`}>▼</span>
               </div>
-              <div className={`overflow-hidden transition-all duration-500 ${expandedIndex === i ? 'max-h-[500px] mt-6 opacity-100' : 'max-h-0 opacity-0'}`}>
-                <div className="space-y-4 pt-4 border-t border-white/10">
-                  {s.details.map((detail, idx) => (
-                    <div key={idx} className="flex gap-3 text-sm leading-relaxed">
-                      <CheckCircle2 size={16} className="text-blue-400 shrink-0 mt-0.5" />
-                      <p>{detail}</p>
-                    </div>
-                  ))}
+              {expandedIndex === idx && (
+                <div className="px-6 pb-8 animate-in fade-in slide-in-from-top-2">
+                  <div className="h-px bg-blue-200/50 mb-6" />
+                  <ul className="space-y-4">
+                    {service.items.map((item, i) => (
+                      <li key={i} className="text-slate-700 flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
+                        <span className="text-lg font-medium">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-              {expandedIndex !== i && <p className="text-sm text-slate-500 mt-2 line-clamp-1">{s.short}</p>}
+              )}
             </div>
           ))}
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-24 px-6 bg-slate-900">
-        <div className="max-w-5xl mx-auto bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col md:flex-row">
-          <div className="p-12 flex-1">
-            {isSuccess ? (
-              <div className="h-full flex flex-col items-center justify-center text-center py-20">
-                <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-6 text-3xl">✓</div>
-                <h2 className="text-2xl font-bold">Inquiry Sent Successfully!</h2>
+      {/* Inquiry Form Section */}
+      <section id="inquiry-section" className="py-24 px-6 bg-slate-50 border-t border-slate-200">
+        <div className="max-w-4xl mx-auto grid lg:grid-cols-5 gap-16">
+          <div className="lg:col-span-2">
+            <h2 className="text-4xl font-black text-slate-900 mb-6 leading-tight">{current.inquiryTitle}</h2>
+            <p className="text-lg text-slate-600 mb-8">{current.inquirySub}</p>
+            <div className="flex items-center gap-4 text-slate-800 font-bold">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-900 font-mono">@</div>
+              inquiry@alsafety.info
+            </div>
+          </div>
+          
+          <div className="lg:col-span-3 bg-white p-8 md:p-10 rounded-[2rem] shadow-2xl shadow-blue-900/5 border border-slate-200">
+            {status === 'success' ? (
+              <div className="text-center py-8 animate-in zoom-in-95">
+                <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">✓</div>
+                <h3 className="text-2xl font-black text-slate-900 mb-4">{current.successTitle}</h3>
+                <p className="text-slate-600 mb-8 leading-relaxed">{current.successBody}</p>
+                <button 
+                  onClick={() => setStatus('idle')}
+                  className="text-blue-900 font-bold border-b-2 border-blue-900 hover:text-blue-700 transition"
+                >
+                  {current.backBtn}
+                </button>
               </div>
             ) : (
               <form action={handleSubmit} className="space-y-6">
-                <h2 className="text-3xl font-black mb-8 italic">{cur.contactTitle}</h2>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <input name="name" placeholder={cur.form.name} required className="p-4 bg-slate-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-blue-600" />
-                  <input name="phone" type="tel" placeholder={cur.form.phone} required className="p-4 bg-slate-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-blue-600" />
+                <div>
+                  <label className="block text-sm font-black text-black mb-2 uppercase tracking-wider">{current.nameLabel}</label>
+                  <input name="name" required type="text" className="w-full p-4 rounded-xl border border-slate-300 bg-white text-black font-medium focus:ring-2 focus:ring-blue-900 outline-none transition" />
                 </div>
-                <input name="email" type="email" placeholder={cur.form.email} required className="w-full p-4 bg-slate-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-blue-600" />
-                <textarea name="message" placeholder={cur.form.msg} required className="w-full p-4 bg-slate-50 rounded-2xl h-32 border-none outline-none focus:ring-2 focus:ring-blue-600 resize-none"></textarea>
-                <button disabled={isSubmitting} className="w-full bg-blue-600 text-white font-bold py-5 rounded-2xl hover:bg-blue-700 transition-all flex items-center justify-center gap-3 uppercase tracking-widest">
-                  {isSubmitting ? "..." : cur.form.btn} <Send size={18} />
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-black text-black mb-2 uppercase tracking-wider">{current.emailLabel}</label>
+                    <input name="email" required type="email" className="w-full p-4 rounded-xl border border-slate-300 bg-white text-black font-medium focus:ring-2 focus:ring-blue-900 outline-none transition" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-black text-black mb-2 uppercase tracking-wider">{current.phoneLabel}</label>
+                    <input name="phone" required type="tel" className={`w-full p-4 rounded-xl border border-slate-300 bg-white text-black font-medium focus:ring-2 focus:ring-blue-900 outline-none transition ${lang === 'ar' ? 'text-right' : 'text-left'}`} />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-black text-black mb-2 uppercase tracking-wider">{current.messageLabel}</label>
+                  <textarea name="message" required rows={4} className="w-full p-4 rounded-xl border border-slate-300 bg-white text-black font-medium focus:ring-2 focus:ring-blue-900 outline-none transition"></textarea>
+                </div>
+                
+                {status === 'error' && <p className="text-red-600 font-bold mb-4">{current.errorMsg}</p>}
+
+                <button 
+                  disabled={isSubmitting}
+                  type="submit" 
+                  className="w-full bg-blue-900 text-white font-black py-5 rounded-xl hover:bg-blue-800 transition transform hover:scale-[1.02] active:scale-[0.98] disabled:bg-slate-400 shadow-lg"
+                >
+                  {isSubmitting ? current.sending : current.sendButton}
                 </button>
               </form>
             )}
           </div>
-          <div className="bg-slate-50 p-12 text-slate-900 md:w-80 flex flex-col justify-center border-l border-slate-100">
-            <h3 className="font-bold text-xs text-blue-600 uppercase tracking-[0.3em] mb-10">Headquarters</h3>
-            <div className="space-y-8">
-              <div className="flex gap-4">
-                <Mail className="text-blue-600 shrink-0" />
-                <div>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Email</p>
-                  <p className="font-bold text-sm">inquiry@alsafety.info</p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <MapPin className="text-blue-600 shrink-0" />
-                <div>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Location</p>
-                  <p className="font-bold text-sm leading-relaxed">{cur.location}</p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
-      <footer className="py-12 text-center text-slate-400 text-[10px] font-bold tracking-[0.3em] uppercase opacity-60">
-        © {new Date().getFullYear()} ALSAFETY Consultancy Services • Excellence in Compliance
+      {/* Footer */}
+      <footer className="py-12 px-6 bg-white border-t">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-blue-900">
+          <div className="text-2xl font-black tracking-tighter">AL SAFETY</div>
+          <div className="text-slate-400 text-sm font-medium">
+            © {new Date().getFullYear()} Alsafety Consultancy Bahrain.
+          </div>
+        </div>
       </footer>
     </main>
   );
